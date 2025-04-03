@@ -14,7 +14,7 @@ export type Role = 'user' | 'admin';
 export async function checkRole(role: Role): Promise<boolean> {
   try {
     // Get the Clerk auth session
-    const { userId } = auth();
+    const { userId } = await auth();
     
     // If no user is logged in, return false
     if (!userId) {
