@@ -40,24 +40,67 @@ export default clerkMiddleware(async (auth, req) => {
       // Add logging to debug
       console.log("Searching for clerk_id:", userId);
 
-      // Consider modifying your query to be more forgiving
+      // First, check if any users exist at all
+      const { data: allUsers, error: allUsersError } = await supabase
+        .from("users")
+        .select("id, clerk_id, role")
+        .limit(10);
+      console.log("Sample users in database:", allUsers);
+      if (allUsersError) {
+        console.error("Error fetching all users:", allUsersError);
+      } else if (!allUsers || allUsers.length === 0) {
+        console.error("No users found in the database at all!");
+      } else {
+        console.log(
+          "Users exist in database. First user clerk_id:",
+          allUsers[0].clerk_id
+        );
+      }
+
+      // Now try the specific user query
       const { data, error } = await supabase
         .from("users")
-        .select("*") // Select all fields to see what's actually there
-        .ilike("clerk_id", userId) // Case insensitive match
-        .single(); // Get a few rows to see what exists
+        .select("*")
+        .ilike("clerk_id", userId)
+        .limit(5);
 
-      console.log("Query results:", data);
-      console.error(error);
-      console.error(await supabase.from("users").select("*"));
+      console.log("Query results for", userId, ":", data);
 
-      if (error || !data) {
+      // Try matching without case sensitivity
+      if (!data || data.length === 0) {
+        console.log("Trying alternative query approaches...");
+
+        // Try exact match
+        const { data: exactMatchData } = await supabase
+          .from("users")
+          .select("id, clerk_id, role")
+          .eq("clerk_id", userId);
+        console.log("Exact match query results:", exactMatchData);
+
+        // Try without user_ prefix if it exists
+        if (userId.startsWith("user_")) {
+          const strippedId = userId.replace("user_", "");
+          const { data: strippedData } = await supabase
+            .from("users")
+            .select("id, clerk_id, role")
+            .ilike("clerk_id", strippedId);
+          console.log("Stripped prefix query results:", strippedData);
+        }
+      }
+
+      if (error) {
         console.error("Error checking admin role in database:", error);
         return NextResponse.redirect(new URL("/", req.url));
       }
 
+      // If no user found or the user is not an admin, redirect to home page
+      if (!data || data.length === 0) {
+        console.error("User not found in database for clerk_id:", userId);
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+
       // If the user is not an admin, redirect to home page
-      if (data.role !== "admin") {
+      if (data[0].role !== "admin") {
         return NextResponse.redirect(new URL("/", req.url));
       }
     } catch (error) {
