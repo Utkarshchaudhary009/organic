@@ -7,12 +7,14 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 interface EditProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function EditProductPage({ params }: EditProductPageProps) {
+export default async function EditProductPage({
+  params,
+}: EditProductPageProps) {
   const [isAdminUser, setIsAdminUser] = useState<boolean | null>(null);
 
   // Check admin status
@@ -22,7 +24,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       if (!admin) {
         redirect("/");
       }
-      setIsAdminUser(admin === 'admin');
+      setIsAdminUser(admin === "admin");
     };
 
     checkAdmin();
@@ -47,7 +49,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       </div>
 
       <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-6'>
-        <ProductForm productId={params.id} />
+        <ProductForm productId={(await params).id} />
       </div>
     </div>
   );
