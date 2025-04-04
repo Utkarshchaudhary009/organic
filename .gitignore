@@ -53,3 +53,6 @@ next-env.d.ts
 .cursorignore
 .cursorconfig
 .env.example
+.env.local.example
+.gitignore
+.gitignore.example

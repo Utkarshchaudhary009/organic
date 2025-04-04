@@ -1,10 +1,12 @@
-import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@/utils/supabase/server';
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { createClient } from "@/utils/supabase/server";
 
-/**
- * Role types for the application
- */
-export type UserRole = 'admin' | 'moderator' | 'user';
+export type UserRole = "admin" | "moderator" | "user";
+export interface ClerkUserRole {
+  metadata: {
+    role: UserRole;
+  };
+}
 
 /**
  * Check if the current user has a specific role
@@ -12,8 +14,33 @@ export type UserRole = 'admin' | 'moderator' | 'user';
  * @returns A boolean indicating if the user has the specified role
  */
 export async function checkRole(role: UserRole): Promise<boolean> {
-  const { sessionClaims } = await auth();
-  return sessionClaims?.metadata?.role === role;
+  try {
+    const user = await currentUser();
+
+    // If no user is logged in, return false
+    if (!user) {
+      return false;
+    }
+
+    // Get user role from Supabase database
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("users")
+      .select("role")
+      .eq("clerk_id", user.id)
+      .single();
+
+    if (error || !data) {
+      console.error("Error fetching role from database:", error);
+      return false;
+    }
+
+    // Check if user has the required role
+    return data.role === role;
+  } catch (error) {
+    console.error("Error checking role:", error);
+    return false;
+  }
 }
 
 /**
@@ -21,8 +48,31 @@ export async function checkRole(role: UserRole): Promise<boolean> {
  * @returns The user's role or null if no role is set
  */
 export async function getUserRole(): Promise<UserRole | null> {
-  const { sessionClaims } = await auth();
-  return (sessionClaims?.metadata?.role as UserRole) || null;
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return null;
+    }
+
+    // Get user role from Supabase database
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("users")
+      .select("role")
+      .eq("clerk_id", user.id)
+      .single();
+
+    if (error || !data) {
+      console.error("Error fetching role from database:", error);
+      return null;
+    }
+
+    return (data.role as UserRole) || null;
+  } catch (error) {
+    console.error("Error getting user role:", error);
+    return null;
+  }
 }
 
 /**
@@ -30,7 +80,7 @@ export async function getUserRole(): Promise<UserRole | null> {
  * @returns A boolean indicating if the user is an admin
  */
 export async function isAdmin(): Promise<boolean> {
-  return checkRole('admin');
+  return checkRole("admin");
 }
 
 /**
@@ -38,7 +88,7 @@ export async function isAdmin(): Promise<boolean> {
  * @returns A boolean indicating if the user is a moderator
  */
 export async function isModerator(): Promise<boolean> {
-  return checkRole('moderator') || checkRole('admin');
+  return checkRole("moderator") || checkRole("admin");
 }
 
 /**
@@ -47,28 +97,31 @@ export async function isModerator(): Promise<boolean> {
  * @param role The role to set
  * @returns A boolean indicating success
  */
-export async function setUserRole(clerkId: string, role: UserRole): Promise<boolean> {
+export async function setUserRole(
+  clerkId: string,
+  role: UserRole
+): Promise<boolean> {
   try {
     // Only allow admins to set roles
     if (!(await isAdmin())) {
-      console.error('Permission denied: Only admins can set roles');
+      console.error("Permission denied: Only admins can set roles");
       return false;
     }
-    
+
     const supabase = await createClient();
     const { error } = await supabase
-      .from('users')
+      .from("users")
       .update({ role })
-      .eq('clerk_id', clerkId);
-    
+      .eq("clerk_id", clerkId);
+
     if (error) {
-      console.error('Error setting user role:', error);
+      console.error("Error setting user role in database:", error);
       return false;
     }
-    
+
     return true;
   } catch (error) {
-    console.error('Error in setUserRole:', error);
+    console.error("Error in setUserRole:", error);
     return false;
   }
-} 
+}

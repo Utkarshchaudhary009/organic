@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useStore} from '@/lib/tanstack';
 import { useUser } from '@clerk/nextjs';
-import { ShoppingCart, Menu, X, User, Heart } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Heart, LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import SearchInput from './SearchInput';
@@ -16,9 +16,20 @@ import AnimatedLogo from './AnimatedLogo';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { data: storeData } = useStore();
   const { user, isSignedIn } = useUser();
   const pathname = usePathname();
+  
+  // Check if user is admin
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const userRole = user?.publicMetadata?.role as string;
+      setIsAdmin(userRole === 'admin');
+    } else {
+      setIsAdmin(false);
+    }
+  }, [isSignedIn, user]);
   
   // Handle scroll effect
   useEffect(() => {
@@ -90,6 +101,21 @@ export default function Navbar() {
             >
               About
             </Link>
+            
+            {/* Admin Link - Only visible to admins */}
+            {isAdmin && (
+              <Link 
+                href="/admin" 
+                className={cn(
+                  "text-sm font-medium hover:text-green-600 dark:hover:text-green-400 transition", 
+                  pathname === "/admin" || pathname.startsWith("/admin/") 
+                    ? "text-green-600 dark:text-green-400" 
+                    : "text-gray-700 dark:text-gray-200"
+                )}
+              >
+                Admin
+              </Link>
+            )}
           </nav>
 
           {/* User & Cart Actions */}
@@ -98,6 +124,20 @@ export default function Navbar() {
             
             {isSignedIn ? (
               <>
+                {/* Admin Dashboard Icon - Only visible to admins */}
+                {isAdmin && (
+                  <Link 
+                    href="/admin" 
+                    className={cn(
+                      "p-2 text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400",
+                      pathname.startsWith("/admin") ? "text-green-600 dark:text-green-400" : ""
+                    )}
+                    aria-label="Admin Dashboard"
+                  >
+                    <LayoutDashboard size={20} />
+                  </Link>
+                )}
+                
                 <Link href="/wishlist" className="p-2 text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400 relative">
                   <Heart size={20} />
                   {/* Wishlist indicator would go here */}
@@ -204,6 +244,21 @@ export default function Navbar() {
             About
           </Link>
           
+          {/* Admin Link - Only visible to admins */}
+          {isAdmin && (
+            <Link 
+              href="/admin" 
+              className={cn(
+                "text-lg font-medium border-b border-gray-200 dark:border-gray-700 pb-2", 
+                pathname === "/admin" || pathname.startsWith("/admin/") 
+                  ? "text-green-600 dark:text-green-400" 
+                  : "text-gray-700 dark:text-gray-200"
+              )}
+            >
+              Admin Dashboard
+            </Link>
+          )}
+          
           {!isSignedIn ? (
             <Link 
               href="/sign-in" 
@@ -228,7 +283,7 @@ export default function Navbar() {
                     <User size={20} className="text-gray-600 dark:text-gray-300" />
                   </div>
                 )}
-    <div>
+                <div>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {user?.fullName || 'User'}
                   </p>
@@ -261,7 +316,7 @@ export default function Navbar() {
             </div>
           )}
         </nav>
-    </div>
+      </div>
     </header>
   );
 }
