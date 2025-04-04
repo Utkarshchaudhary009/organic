@@ -43,7 +43,7 @@ export default clerkMiddleware(async (auth, req) => {
         .eq("clerk_id", userId)
         .single();
         console.error(data);
-        console.error(user);
+        console.error(error);
         console.error(await supabase.from("users").select("*"));
 
       if (error || !data) {
