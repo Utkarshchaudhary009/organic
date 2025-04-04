@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { checkRole } from "@/utils/roles";
 import { redirect } from "next/navigation";
 import { useStore } from "@/lib/tanstack";
-import { createClient } from "@//lib/tanstack/supabase";
+import { supabase } from "@/lib/tanstack/supabase";
 import { Loader2, Save, Plus, Trash2 } from "lucide-react";
 
 interface FooterLink {
@@ -126,7 +126,6 @@ export default function FooterSettingsPage() {
     setIsSaving(true);
 
     try {
-      const supabase = createClient();
       const { error } = await supabase
         .from("store")
         .update({
