@@ -62,9 +62,9 @@ async function searchProducts(query: string) {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const query = searchParams.q || "";
+  const query = (await searchParams).q || "";
   const products = await searchProducts(query);
   const hasResults = products.length > 0;
 
