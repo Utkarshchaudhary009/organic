@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStore} from '@/lib/tanstack';
-import { useUser } from '@clerk/nextjs';
+import { useUser, UserButton } from '@clerk/nextjs';
 import { ShoppingCart, Menu, X, User, Heart, LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -12,7 +12,7 @@ import SearchInput from './SearchInput';
 import CartCount from './CartCount';
 import CategoryMenu from './CategoryMenu';
 import AnimatedLogo from './AnimatedLogo';
-
+import { getUserRole } from '@/utils/rolesClient';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,12 +23,15 @@ export default function Navbar() {
   
   // Check if user is admin
   useEffect(() => {
-    if (isSignedIn && user) {
-      const userRole = user?.publicMetadata?.role as string;
-      setIsAdmin(userRole === 'admin');
-    } else {
-      setIsAdmin(false);
-    }
+    const checkUserRole = async () => {
+      if (isSignedIn && user) {
+        const userRole = await getUserRole();
+        setIsAdmin(userRole === 'admin');
+      } else {
+        setIsAdmin(false);
+      }
+    };
+    checkUserRole();
   }, [isSignedIn, user]);
   
   // Handle scroll effect
@@ -146,20 +149,7 @@ export default function Navbar() {
                   <ShoppingCart size={20} />
                   <CartCount />
                 </Link>
-                <Link href="/profile" className="p-2 text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400">
-                  {user?.imageUrl ? (
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-green-500">
-                      <Image
-                        src={user.imageUrl}
-                        alt="Profile"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <User size={20} />
-                  )}
-                </Link>
+                <UserButton />  
               </>
             ) : (
               <Link 

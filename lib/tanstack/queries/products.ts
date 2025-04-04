@@ -146,33 +146,27 @@ export function useProductsByCategory(
 }
 
 // Search products
-export function useSearchProducts(
-  query: string,
-  options: PaginationOptions = { page: 1, perPage: 10 }
-) {
-  const pagination = getPaginationParams(options);
-
+export function useSearchProducts(searchTerm: string) {
   return useQuery({
-    queryKey: [...queryKeys.products.search(query), pagination],
+    queryKey: ["productSearch", searchTerm],
     queryFn: async () => {
-      const { data, count, error } = await supabase
+      if (!searchTerm) return [];
+
+      const { data, error } = await supabase
         .from("products")
-        .select("*", { count: "exact" })
-        .textSearch("name", query)
-        .range(pagination.from, pagination.to);
+        .select("*")
+        .or(
+          `name.ilike.%${searchTerm}%,details.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%`
+        )
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return {
-        products: data as Product[],
-        totalCount: count || 0,
-        totalPages: count ? Math.ceil(count / options.perPage) : 0,
-        currentPage: options.page,
-      };
+      return data as Product[];
     },
-    enabled: !!query,
+    enabled: !!searchTerm,
   });
 }
 
