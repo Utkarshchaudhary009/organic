@@ -34,7 +34,8 @@ export default clerkMiddleware(async (auth, req) => {
     try {
       // Supabase client for client-side usage
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const supabaseAnonKey =
+        process.env.SUPABASE_SERVICE_ROLE_KEY!;
       // Get the role from Supabase database
       const supabase = await createClient(supabaseUrl, supabaseAnonKey);
       // Add logging to debug
@@ -42,18 +43,19 @@ export default clerkMiddleware(async (auth, req) => {
 
       // First, check if any users exist at all
       const { data: allUsers, error: allUsersError } = await supabase
-        .select("id, clerk_id, role")
         .from("users")
+        .select("id, clerk_id, role")
         .limit(10);
       console.log("Sample users in database:", allUsers);
-      // From users
-      // select *
       if (allUsersError) {
         console.error("Error fetching all users:", allUsersError);
       } else if (!allUsers || allUsers.length === 0) {
         console.error("No users found in the database at all!");
       } else {
-        console.log("Users exist in database. First user clerk_id:", allUsers[0].clerk_id);
+        console.log(
+          "Users exist in database. First user clerk_id:",
+          allUsers[0].clerk_id
+        );
       }
 
       // Now try the specific user query
@@ -64,18 +66,18 @@ export default clerkMiddleware(async (auth, req) => {
         .limit(5);
 
       console.log("Query results for", userId, ":", data);
-      
+
       // Try matching without case sensitivity
       if (!data || data.length === 0) {
         console.log("Trying alternative query approaches...");
-        
+
         // Try exact match
         const { data: exactMatchData } = await supabase
           .from("users")
           .select("id, clerk_id, role")
           .eq("clerk_id", userId);
         console.log("Exact match query results:", exactMatchData);
-        
+
         // Try without user_ prefix if it exists
         if (userId.startsWith("user_")) {
           const strippedId = userId.replace("user_", "");
