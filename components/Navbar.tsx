@@ -13,6 +13,8 @@ import CartCount from './CartCount';
 import CategoryMenu from './CategoryMenu';
 import AnimatedLogo from './AnimatedLogo';
 import { getUserRole } from '@/utils/rolesClient';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -258,11 +260,30 @@ export default function Navbar() {
             </Link>
           ) : (
             <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-             
-                
+              <div className="flex items-center space-x-4 mb-4">
+                {user?.imageUrl ? (
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-green-500">
+                    <Avatar>
+                    <AvatarImage src={user.imageUrl} />
+                    <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <User size={20} className="text-gray-600 dark:text-gray-300" />
+                  </div>
+                )}
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {user?.fullName || 'User'}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {user?.primaryEmailAddress?.emailAddress || ''}
+                  </p>
+                </div>
+              </div>
               
               <div className="flex flex-col space-y-3">
-                <UserButton userProfileMode="navigation" userProfileUrl='profile' showName/>
                 <Link 
                   href="/orders" 
                   className="text-gray-700 dark:text-gray-200 hover:text-green-600 dark:hover:text-green-400"

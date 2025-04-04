@@ -1,4 +1,3 @@
-
 import { useAuth } from "@clerk/nextjs";
 
 import { UserRole } from "@/utils/roles";
@@ -16,12 +15,10 @@ export async function getUserRole(): Promise<UserRole | null> {
       .from("users")
       .select("role")
       .eq("clerk_id", user.userId);
-    
-      console.log(data)
-      console.log(user)
-      console.log(await supabase
-        .from("users")
-        .select("*"))
+
+    console.error(data);
+    console.error(user);
+    console.error(await supabase.from("users").select("*"));
 
     if (error || !data) {
       console.error("Error fetching role from database:", error);
