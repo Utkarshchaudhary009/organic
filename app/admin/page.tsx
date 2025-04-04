@@ -58,6 +58,11 @@ export default async function AdminDashboard() {
           description='Update store information'
           link='/admin/store'
         />
+        <DashboardCard
+          title='Footer'
+          description='Customize footer content and links'
+          link='/admin/footer'
+        />
       </div>
     </div>
   );

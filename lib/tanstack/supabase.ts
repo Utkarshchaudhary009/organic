@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Supabase client for client-side usage
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -215,6 +215,9 @@ export type Database = {
           return_policy: string | null;
           meta_title: string | null;
           meta_description: string | null;
+          footer_links: Array<any>;
+          address: string | null;
+          newsletter_enabled: boolean;
         };
         Insert: {
           id?: string;
@@ -236,6 +239,9 @@ export type Database = {
           return_policy?: string | null;
           meta_title?: string | null;
           meta_description?: string | null;
+          footer_links?: Array<any>;
+          address?: string | null;
+          newsletter_enabled?: boolean;
         };
         Update: {
           id?: string;
@@ -257,6 +263,9 @@ export type Database = {
           return_policy?: string | null;
           meta_title?: string | null;
           meta_description?: string | null;
+          footer_links?: Array<any>;
+          address?: string | null;
+          newsletter_enabled?: boolean;
         };
       };
       // Add other tables as needed
@@ -355,6 +364,9 @@ export type Database = {
   };
 };
 
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
-export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']; 
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+export type InsertTables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
+export type UpdateTables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Update"];

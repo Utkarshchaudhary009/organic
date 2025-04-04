@@ -14,10 +14,15 @@ import {
   Facebook,
   Twitter,
   Instagram,
-  Linkedin,
   Youtube,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface FooterLink {
+  title: string;
+  url: string;
+  category: "quick_links" | "information";
+}
 
 export default function Footer() {
   const { data: storeData, isLoading } = useStore();
@@ -33,7 +38,24 @@ export default function Footer() {
 
   const currentYear = new Date().getFullYear();
 
-    return (
+  // Extract footer links from store data
+  const quickLinks: FooterLink[] =
+    storeData?.footer_links?.filter(
+      (link: FooterLink) => link.category === "quick_links"
+    ) || [];
+
+  const informationLinks: FooterLink[] =
+    storeData?.footer_links?.filter(
+      (link: FooterLink) => link.category === "information"
+    ) || [];
+
+  // Check if newsletter is enabled
+  const showNewsletter = storeData?.newsletter_enabled !== false;
+
+  // Format social links for easier access
+  const socialLinks = storeData?.social_links || {};
+
+  return (
     <footer className='bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-20'>
       <div className='container mx-auto px-4 py-12'>
         {/* Main Footer Content */}
@@ -99,247 +121,152 @@ export default function Footer() {
                 </div>
               )}
 
-              <div className='flex'>
-                <MapPin
-                  size={18}
-                  className='text-green-600 dark:text-green-400 mr-2 flex-shrink-0 mt-1'
-                />
-                <address className='text-gray-600 dark:text-gray-400 not-italic'>
-                  123 Organic Street, Green City, EC012
-                </address>
-              </div>
+              {storeData?.address && (
+                <div className='flex'>
+                  <MapPin
+                    size={18}
+                    className='text-green-600 dark:text-green-400 mr-2 flex-shrink-0 mt-1'
+                  />
+                  <address className='text-gray-600 dark:text-gray-400 not-italic'>
+                    {storeData.address}
+                  </address>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
-              Quick Links
-            </h3>
-            <ul className='space-y-2'>
-              <li>
-                <Link
-                  href='/'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/products'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/categories'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/about'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/contact'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {quickLinks.length > 0 && (
+            <div>
+              <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+                Quick Links
+              </h3>
+              <ul className='space-y-2'>
+                {quickLinks.map((link, index) => (
+                  <li key={`quick-${index}`}>
+                    <Link
+                      href={link.url}
+                      className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
+                    >
+                      <ChevronRight
+                        size={14}
+                        className='mr-1'
+                      />
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Information */}
-          <div>
-            <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
-              Information
-            </h3>
-            <ul className='space-y-2'>
-              <li>
-                <Link
-                  href='/privacy-policy'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/terms-of-service'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/shipping-policy'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Shipping Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/return-policy'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  Return Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='/faq'
-                  className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
-                >
-                  <ChevronRight
-                    size={14}
-                    className='mr-1'
-                  />
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {informationLinks.length > 0 && (
+            <div>
+              <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+                Information
+              </h3>
+              <ul className='space-y-2'>
+                {informationLinks.map((link, index) => (
+                  <li key={`info-${index}`}>
+                    <Link
+                      href={link.url}
+                      className='text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 flex items-center'
+                    >
+                      <ChevronRight
+                        size={14}
+                        className='mr-1'
+                      />
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Newsletter */}
-          <div>
-            <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
-              Newsletter
-            </h3>
-            <p className='text-gray-600 dark:text-gray-400 mb-4'>
-              Subscribe to our newsletter for the latest updates and organic
-              food tips.
-            </p>
-            <form
-              onSubmit={handleSubscribe}
-              className='mb-6'
-            >
-              <div className='relative'>
-                <input
-                  type='email'
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder='Your email address'
-                  required
-                  className='w-full py-2 px-4 pr-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500'
-                />
-                <button
-                  type='submit'
-                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-green-600 rounded-md p-1 hover:bg-green-700 transition'
-                >
-                  <Send size={18} />
-                </button>
-              </div>
-            </form>
-
-            {/* Social Media */}
-      <div>
-              <h3 className='text-md font-semibold text-gray-900 dark:text-white mb-3'>
-                Follow Us
+          {showNewsletter && (
+            <div>
+              <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
+                Newsletter
               </h3>
-              <div className='flex space-x-3'>
-                <a
-                  href='#'
-                  className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
-                >
-                  <Facebook size={16} />
-                </a>
-                <a
-                  href='#'
-                  className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
-                >
-                  <Twitter size={16} />
-                </a>
-                <a
-                  href='#'
-                  className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
-                >
-                  <Instagram size={16} />
-                </a>
-                <a
-                  href='#'
-                  className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
-                >
-                  <Youtube size={16} />
-                </a>
+              <p className='text-gray-600 dark:text-gray-400 mb-4'>
+                Subscribe to our newsletter for the latest updates and organic
+                food tips.
+              </p>
+              <form
+                onSubmit={handleSubscribe}
+                className='mb-6'
+              >
+                <div className='relative'>
+                  <input
+                    type='email'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder='Your email address'
+                    required
+                    className='w-full py-2 px-4 pr-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500'
+                  />
+                  <button
+                    type='submit'
+                    className='absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-green-600 rounded-md p-1 hover:bg-green-700 transition'
+                  >
+                    <Send size={18} />
+                  </button>
+                </div>
+              </form>
+
+              {/* Social Media */}
+              <div>
+                <h3 className='text-md font-semibold text-gray-900 dark:text-white mb-3'>
+                  Follow Us
+                </h3>
+                <div className='flex space-x-3'>
+                  {socialLinks.facebook && (
+                    <a
+                      href={socialLinks.facebook}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
+                    >
+                      <Facebook size={16} />
+                    </a>
+                  )}
+                  {socialLinks.twitter && (
+                    <a
+                      href={socialLinks.twitter}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
+                    >
+                      <Twitter size={16} />
+                    </a>
+                  )}
+                  {socialLinks.instagram && (
+                    <a
+                      href={socialLinks.instagram}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
+                    >
+                      <Instagram size={16} />
+                    </a>
+                  )}
+                  {socialLinks.youtube && (
+                    <a
+                      href={socialLinks.youtube}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-green-500 hover:text-white dark:hover:bg-green-500 dark:hover:text-white transition'
+                    >
+                      <Youtube size={16} />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Payment Methods */}
-        <div className='mt-12 border-t border-gray-200 dark:border-gray-800 pt-8'>
-          <h3 className='text-md font-semibold text-gray-900 dark:text-white mb-4 text-center'>
-            Payment Methods
-          </h3>
-          <div className='flex justify-center space-x-4'>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              VISA
-            </div>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              MC
-            </div>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              AMEX
-            </div>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              PayPal
-            </div>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              Apple
-            </div>
-            <div className='w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-xs font-semibold'>
-              Google
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Bottom Footer */}
@@ -353,11 +280,10 @@ export default function Footer() {
             <span className='text-gray-600 dark:text-gray-400 text-sm'>
               Theme:
             </span>
-        <ThemeSwitcher />
+            <ThemeSwitcher />
           </div>
         </div>
       </div>
     </footer>
-    );
-  }
-  
+  );
+}

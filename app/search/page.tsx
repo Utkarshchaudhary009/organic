@@ -11,10 +11,10 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Generate dynamic metadata
 export async function generateMetadata(
-  { searchParams }: { searchParams: { q?: string } },
+  { searchParams }: { searchParams: Promise<{ q?: string }> },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const query = searchParams.q || "";
+  const query = (await searchParams).q || "";
 
   const baseMetadata = await parent;
 
