@@ -57,7 +57,7 @@ export default clerkMiddleware(async (auth, req) => {
       }
 
       // If the user is not an admin, redirect to home page
-      if (data.role !== "admin") {
+      if (data[0].role !== "admin") {
         return NextResponse.redirect(new URL("/", req.url));
       }
     } catch (error) {
