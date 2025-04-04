@@ -10,13 +10,9 @@ import { Loader2, Plus, Search, Edit, Trash2, Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useDeleteProduct } from "@/lib/tanstack/queries/products";
-import { Metadata } from "next";
 import { useEffect } from "react";
 
-export const metadata: Metadata = {
-  title: "Products Management | Admin",
-  description: "Manage your product catalog",
-};
+
 
 export default function ProductsManagementPage() {
   const router = useRouter();
