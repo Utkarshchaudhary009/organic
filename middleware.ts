@@ -42,11 +42,12 @@ export default clerkMiddleware(async (auth, req) => {
 
       // First, check if any users exist at all
       const { data: allUsers, error: allUsersError } = await supabase
-        .from("users")
         .select("id, clerk_id, role")
+        .from("users")
         .limit(10);
       console.log("Sample users in database:", allUsers);
-      
+      // From users
+      // select *
       if (allUsersError) {
         console.error("Error fetching all users:", allUsersError);
       } else if (!allUsers || allUsers.length === 0) {
