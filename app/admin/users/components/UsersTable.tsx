@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
-import { createClient } from "@supabase/supabase-js";
 import { useEffect } from "react";
-import { useAuth } from "@clerk/nextjs/";
+import { useAuth } from "@clerk/nextjs";
 
 import { UserRole } from "@/utils/roles";
 import { supabase } from "@/lib/tanstack/supabase";
+
 export async function getUserRole(): Promise<UserRole | null> {
   try {
     const user = await useAuth();
