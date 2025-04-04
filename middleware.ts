@@ -37,12 +37,17 @@ export default clerkMiddleware(async (auth, req) => {
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
       // Get the role from Supabase database
       const supabase = await createClient(supabaseUrl, supabaseAnonKey);
+     // Add logging to debug
+      console.log("Searching for clerk_id:", userId);
+
+      // Consider modifying your query to be more forgiving
       const { data, error } = await supabase
         .from("users")
-        .select("role")
-        .eq("clerk_id", userId)
-        .single();
-        console.error(data);
+        .select("*")  // Select all fields to see what's actually there
+        .ilike("clerk_id", userId)  // Case insensitive match
+        .limit(5);  // Get a few rows to see what exists
+
+      console.log("Query results:", data);
         console.error(error);
         console.error(await supabase.from("users").select("*"));
 
