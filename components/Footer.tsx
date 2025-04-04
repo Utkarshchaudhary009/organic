@@ -33,7 +33,7 @@ export default function Footer() {
 
   const currentYear = new Date().getFullYear();
 
-  return (
+    return (
     <footer className='bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-20'>
       <div className='container mx-auto px-4 py-12'>
         {/* Main Footer Content */}
@@ -281,7 +281,7 @@ export default function Footer() {
             </form>
 
             {/* Social Media */}
-            <div>
+      <div>
               <h3 className='text-md font-semibold text-gray-900 dark:text-white mb-3'>
                 Follow Us
               </h3>
@@ -353,10 +353,11 @@ export default function Footer() {
             <span className='text-gray-600 dark:text-gray-400 text-sm'>
               Theme:
             </span>
-            <ThemeSwitcher />
+        <ThemeSwitcher />
           </div>
         </div>
       </div>
     </footer>
-  );
-}
+    );
+  }
+  

@@ -41,7 +41,7 @@ export default function Navbar() {
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
-  
+
   return (
     <header 
       className={cn(
@@ -149,6 +149,15 @@ export default function Navbar() {
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
+        {/* Close sidebar button */}
+        <button
+          className="absolute top-6 right-6 p-2 text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 rounded-full bg-gray-100 dark:bg-gray-800"
+          onClick={() => setIsMenuOpen(false)}
+          aria-label="Close sidebar"
+        >
+          <X size={20} />
+        </button>
+        
         <div className="mb-6 mt-2">
           <SearchInput mobile />
         </div>
@@ -219,7 +228,7 @@ export default function Navbar() {
                     <User size={20} className="text-gray-600 dark:text-gray-300" />
                   </div>
                 )}
-                <div>
+    <div>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {user?.fullName || 'User'}
                   </p>
@@ -252,7 +261,7 @@ export default function Navbar() {
             </div>
           )}
         </nav>
-      </div>
+    </div>
     </header>
   );
 }

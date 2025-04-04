@@ -6,7 +6,7 @@ The application uses TanStack Query for efficient data fetching and caching with
 
 To use the TanStack Query setup, install the required dependencies:
 
-```bash
+   ```bash
 npm install @tanstack/react-query @tanstack/react-query-devtools
 ```
 
