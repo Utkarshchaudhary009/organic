@@ -42,6 +42,9 @@ export default clerkMiddleware(async (auth, req) => {
         .select("role")
         .eq("clerk_id", userId)
         .single();
+        console.error(data);
+        console.error(user);
+        console.error(await supabase.from("users").select("*"));
 
       if (error || !data) {
         console.error("Error checking admin role in database:", error);
