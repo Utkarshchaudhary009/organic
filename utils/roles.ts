@@ -23,8 +23,7 @@ export async function checkRole(role: UserRole): Promise<boolean> {
     }
 
     // Get user role from Supabase database
-    const supabase = await createClient();
-    const { data, error } = await supabase
+      const { data, error } = await supabase
       .from("users")
       .select("role")
       .eq("clerk_id", user.id)
@@ -56,8 +55,7 @@ export async function getUserRole(): Promise<UserRole | null> {
     }
 
     // Get user role from Supabase database
-    const supabase = await createClient();
-    const { data, error } = await supabase
+      const { data, error } = await supabase
       .from("users")
       .select("role")
       .eq("clerk_id", user.id)
@@ -108,7 +106,6 @@ export async function setUserRole(
       return false;
     }
 
-    const supabase = await createClient();
     const { error } = await supabase
       .from("users")
       .update({ role })

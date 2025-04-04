@@ -13,7 +13,6 @@ export async function POST(request: Request) {
     }
 
     // Check if the authenticated user is an admin by querying Supabase
-    const supabase = await createClient();
     const { data: adminCheck, error: adminCheckError } = await supabase
       .from("users")
       .select("role")
