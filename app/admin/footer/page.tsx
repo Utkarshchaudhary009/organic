@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { checkRole } from "@/utils/roles";
 import { redirect } from "next/navigation";
 import { useStore } from "@/lib/tanstack";
 import { supabase } from "@/lib/tanstack/supabase";
@@ -23,7 +22,6 @@ interface FooterSocialMedia {
 export default function FooterSettingsPage() {
   const router = useRouter();
   const { data: storeData, isLoading, refetch } = useStore();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     contact_email: "",
@@ -34,17 +32,7 @@ export default function FooterSettingsPage() {
     newsletter_enabled: true,
   });
 
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      const isUserAdmin = await checkRole("admin");
-      setIsAdmin(isUserAdmin);
-      if (!isUserAdmin) {
-        redirect("/");
-      }
-    };
-    checkAdminStatus();
-  }, []);
+
 
   // Load store data
   useEffect(() => {
@@ -152,7 +140,7 @@ export default function FooterSettingsPage() {
     }
   };
 
-  if (isLoading || isAdmin === null) {
+  if (isLoading ) {
     return (
       <div className='flex justify-center items-center min-h-screen'>
         <Loader2 className='h-8 w-8 animate-spin text-green-600' />

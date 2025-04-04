@@ -4,7 +4,36 @@ import { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect } from "react";
+import { useAuth } from "@clerk/nextjs/";
+
 import { UserRole } from "@/utils/roles";
+import { supabase } from "@/lib/tanstack/supabase";
+export async function getUserRole(): Promise<UserRole | null> {
+  try {
+    const user = await useAuth();
+
+    if (!user) {
+      return null;
+    }
+
+    // Get user role from Supabase database
+    const { data, error } = await supabase
+      .from("users")
+      .select("role")
+      .eq("clerk_id", user.userId)
+      .single();
+
+    if (error || !data) {
+      console.error("Error fetching role from database:", error);
+      return null;
+    }
+
+    return (data.role as UserRole) || null;
+  } catch (error) {
+    console.error("Error getting user role:", error);
+    return null;
+  }
+}
 import {
   UserMinus,
   UserCog,
@@ -12,10 +41,6 @@ import {
   ShieldAlert,
   User as UserIcon,
 } from "lucide-react";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function UsersTable() {
   const [users, setUsers] = useState<any[]>([]);

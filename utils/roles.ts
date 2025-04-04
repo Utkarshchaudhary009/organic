@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/tanstack/supabase";
 
 export type UserRole = "admin" | "moderator" | "user";
@@ -15,7 +15,7 @@ export interface ClerkUserRole {
  */
 export async function checkRole(role: UserRole): Promise<boolean> {
   try {
-    const user = await currentUser();
+    const user = await auth();
 
     // If no user is logged in, return false
     if (!user) {
@@ -26,7 +26,7 @@ export async function checkRole(role: UserRole): Promise<boolean> {
       const { data, error } = await supabase
       .from("users")
       .select("role")
-      .eq("clerk_id", user.id)
+      .eq("clerk_id", user.userId)
       .single();
 
     if (error || !data) {
@@ -48,17 +48,17 @@ export async function checkRole(role: UserRole): Promise<boolean> {
  */
 export async function getUserRole(): Promise<UserRole | null> {
   try {
-    const user = await currentUser();
+    const user = await auth();
 
     if (!user) {
       return null;
     }
 
     // Get user role from Supabase database
-      const { data, error } = await supabase
+    const { data, error } = await supabase
       .from("users")
       .select("role")
-      .eq("clerk_id", user.id)
+      .eq("clerk_id", user.userId)
       .single();
 
     if (error || !data) {
