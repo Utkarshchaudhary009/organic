@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { auth, currentUser } from '@clerk/nextjs';
+import { createClient } from "@supabase/supabase-js";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -11,13 +11,13 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
  */
 export async function getUserByClerkId(clerkId: string) {
   const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('clerk_id', clerkId)
+    .from("users")
+    .select("*")
+    .eq("clerk_id", clerkId)
     .single();
 
   if (error) {
-    console.error('Error getting user from Supabase:', error);
+    console.error("Error getting user from Supabase:", error);
     return null;
   }
 
@@ -28,8 +28,8 @@ export async function getUserByClerkId(clerkId: string) {
  * Get the current authenticated user from Supabase
  */
 export async function getCurrentUser() {
-  const { userId } = auth();
-  
+  const { userId } = await auth();
+
   if (!userId) {
     return null;
   }
@@ -43,13 +43,13 @@ export async function getCurrentUser() {
  */
 export async function syncUserWithSupabase() {
   const clerkUser = await currentUser();
-  
+
   if (!clerkUser) {
     return null;
   }
 
   const supabaseUser = await getUserByClerkId(clerkUser.id);
-  
+
   // If user exists in Supabase, return it
   if (supabaseUser) {
     return supabaseUser;
@@ -57,7 +57,7 @@ export async function syncUserWithSupabase() {
 
   // Otherwise, create a new user in Supabase
   const primaryEmailAddress = clerkUser.emailAddresses.find(
-    email => email.id === clerkUser.primaryEmailAddressId
+    (email) => email.id === clerkUser.primaryEmailAddressId
   );
 
   const newUser = {
@@ -65,25 +65,28 @@ export async function syncUserWithSupabase() {
     email: primaryEmailAddress?.emailAddress,
     first_name: clerkUser.firstName,
     last_name: clerkUser.lastName,
-    name: clerkUser.firstName && clerkUser.lastName 
-      ? `${clerkUser.firstName} ${clerkUser.lastName}` 
-      : clerkUser.firstName || null,
+    name:
+      clerkUser.firstName && clerkUser.lastName
+        ? `${clerkUser.firstName} ${clerkUser.lastName}`
+        : clerkUser.firstName || null,
     image_url: clerkUser.imageUrl,
-    role:clerkUser.publicMetadata.role || "user",
+    role: clerkUser.publicMetadata.role || "user",
     primary_email_address_id: clerkUser.primaryEmailAddressId,
-    email_verified_at: primaryEmailAddress?.emailAddress ? new Date().toISOString() : null,
+    email_verified_at: primaryEmailAddress?.emailAddress
+      ? new Date().toISOString()
+      : null,
   };
 
   const { data, error } = await supabase
-    .from('users')
+    .from("users")
     .insert([newUser])
     .select()
     .single();
 
   if (error) {
-    console.error('Error creating user in Supabase:', error);
+    console.error("Error creating user in Supabase:", error);
     return null;
   }
 
   return data;
-} 
+}
