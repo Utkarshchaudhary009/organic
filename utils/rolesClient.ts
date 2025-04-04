@@ -14,18 +14,15 @@ export async function getUserRole(): Promise<UserRole | null> {
     const { data, error } = await supabase
       .from("users")
       .select("role")
-      .eq("clerk_id", user.userId);
-
-    console.error(data);
-    console.error(user);
-    console.error(await supabase.from("users").select("*"));
+      .eq("clerk_id", user.userId)
+      .single();
 
     if (error || !data) {
       console.error("Error fetching role from database:", error);
       return null;
     }
 
-    return (data[0].role as UserRole) || null;
+    return (data.role as UserRole) || null;
   } catch (error) {
     console.error("Error getting user role:", error);
     return null;
