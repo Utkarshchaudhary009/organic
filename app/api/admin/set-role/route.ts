@@ -1,6 +1,6 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { supabase } from "@/lib/tanstack/supabase";
 
 export async function POST(request: Request) {
   try {

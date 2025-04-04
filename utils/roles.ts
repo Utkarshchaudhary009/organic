@@ -1,5 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { createClient } from "@/utils/supabase/server";
+import { supabase } from "@/lib/tanstack/supabase";
 
 export type UserRole = "admin" | "moderator" | "user";
 export interface ClerkUserRole {

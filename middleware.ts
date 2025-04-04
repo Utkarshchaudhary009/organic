@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 
 // Define public routes that don't require authentication
 const publicRoutes = createRouteMatcher([
@@ -32,8 +32,11 @@ export default clerkMiddleware(async (auth, req) => {
   // Check if user is trying to access admin routes
   if (userId && adminRoutes(req)) {
     try {
+      // Supabase client for client-side usage
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
       // Get the role from Supabase database
-      const supabase = await createClient();
+      const supabase = await createClient(supabaseUrl, supabaseAnonKey);
       const { data, error } = await supabase
         .from("users")
         .select("role")
